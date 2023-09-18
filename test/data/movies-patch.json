@@ -1,6 +1,10 @@
 {
-  "name": "name patched 888",
-  "description": "description patched 888",
-  "price": "888",
-  "rentalPrice": "888"
+"name": "name-patched",
+"description": "description-patched",
+"weeklyPrice": 3,
+"thumbnailUrl": "thumbnailUrl-patched",
+"availableToRent": "no",
+"rating": 9,
+"diskType": "DVD"
 }
+

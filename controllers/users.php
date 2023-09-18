@@ -39,16 +39,17 @@ try {
       $userId = intval($matches[1]);
       assertValidUser($db, $userId);
 
-      $query = $db->prepare('SELECT * FROM favourites WHERE userId = :userId;');
-      $query->bindParam(':userId', $userId, PDO::PARAM_INT);
-      $query->execute();
+      $favouritesQuery = $db->prepare('SELECT * FROM favourites WHERE userId = :userId;');
+      $favouritesQuery->bindParam(':userId', $userId, PDO::PARAM_INT);
+      $favouritesQuery->execute();
 
-      while($row = $query->fetch(PDO::FETCH_ASSOC)) {
+      $movies = array();
+      while($row = $favouritesQuery->fetch(PDO::FETCH_ASSOC)) {
         $movieId = $row['movieId'];
-        $query = $db->prepare('SELECT * FROM movies WHERE id = :movieId;');
-        $query->bindParam(':movieId', $movieId, PDO::PARAM_INT);
-        $query->execute();
-        $movies = readMovieResultSet($query);
+        $moviesQuery = $db->prepare('SELECT * FROM movies WHERE id = :movieId;');
+        $moviesQuery->bindParam(':movieId', $movieId, PDO::PARAM_INT);
+        $moviesQuery->execute();
+        $movies = array_merge($movies, readMovieResultSet($moviesQuery));
       }
 
       send($movies);

@@ -4,6 +4,5 @@
     public $username;
     public $password;
     public $role;
-    public $favourites;
   }
 ?>

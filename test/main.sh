@@ -36,6 +36,16 @@ curl \
     https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php \
     | jq .
 
+echo "XML Example"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    -H "Accept: application/xml" \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php \
+    | xmllint --format -
+
 ##########################################
 ## MOVIES - Delete
 ##########################################
@@ -233,7 +243,7 @@ curl \
     -X POST \
     https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/users.php/${user_id}/favourite-movies/${second_movie_id}
 
-echo "Listing favourite-movies movies"
+echo "Listing favourite-movies"
 read
 
 curl \
@@ -286,3 +296,160 @@ curl \
     https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/users.php/${user_id}/favourite-movies \
     | jq .
 
+
+
+
+
+##########################################
+## BAD REQUESTS
+##########################################
+
+##########################################
+## BAD REQUESTS - Bad URI
+##########################################
+
+echo "Using a bad URI: https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php/${movie_id}/bad-path"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php/${movie_id}/bad-path \
+    | jq .
+
+##########################################
+## BAD REQUESTS - Bad Method
+##########################################
+
+echo "Using a bad method: PUT"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    -X PUT \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php \
+    | jq .
+
+##########################################
+## BAD REQUESTS - Bad ID given
+##########################################
+
+echo "Bad ID: https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/users.php/1"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/users.php/1 \
+    | jq .
+
+##########################################
+## BAD REQUESTS - Bad type given
+##########################################
+
+echo "Bad type given: username is not a string"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    --data @data/users-post-bad-type.json \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/users.php \
+    | jq .
+
+##########################################
+## BAD REQUESTS - Required field not given
+##########################################
+
+echo "Required field not given"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    --data @data/users-post-missing-field.json \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/users.php \
+    | jq .
+
+##########################################
+## BAD REQUESTS - Invalid string length given
+##########################################
+
+echo "Invalid string length given"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    --data @data/users-post-bad-length.json \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/users.php \
+    | jq .
+
+##########################################
+## BAD REQUESTS - Invalid string given
+##########################################
+
+echo "Invalid string given: not DVD or Blu-ray"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    --data @data/movies-post-bad-string.json \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php \
+    | jq .
+
+
+
+
+
+##########################################
+## BAD REQUESTS - Bad username or password
+##########################################
+
+echo "Using a wrong username or password when requesting a token"
+read
+
+curl -sS --data @data/tokens-post-bad.json https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/token.php | jq .
+
+##########################################
+## BAD REQUESTS - Invalid token
+##########################################
+
+echo "Using an invalid token"
+read
+
+curl \
+    -sS \
+    -H "Authorization: Bearer asdfasdf" \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php \
+    | jq .
+
+##########################################
+## BAD REQUESTS - No token
+##########################################
+
+echo "Not giving a token"
+read
+
+curl \
+    -sS \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php \
+    | jq .
+
+##########################################
+## BAD REQUESTS - Unauthorised
+##########################################
+
+echo "Unauthorised: trying to delete a movie record as a customer (using a token with a role of customer)"
+read
+
+API_TOKEN=$(curl -sS --data @data/tokens-post-customer-patched.json https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/token.php | jq -r '.token')
+
+curl \
+    -sS \
+    -H "Authorization: Bearer ${API_TOKEN}" \
+    -X DELETE \
+    https://digitech.ncl-coll.ac.uk/~ejohn/dvden/controllers/movies.php/${first_movie_id} \
+    | jq .

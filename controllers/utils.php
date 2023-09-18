@@ -56,7 +56,7 @@
     try {
         $decoded = JWT::decode($token, new Key(secretKey, 'HS256'));
     } catch (Exception $ex) {
-      errorAndExit(401,"Invalid token provided: " );
+      errorAndExit(401,"Invalid token provided");
     }
     // Check if the user has permission. if not, check for role perms.
     if ($username != null && $decoded->sub === $username) {

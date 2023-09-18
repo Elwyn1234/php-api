@@ -1,0 +1,10 @@
+{
+"name": "name1",
+"description": "description1",
+"weeklyPrice": 1,
+"thumbnailUrl": "thumbnailUrl1",
+"availableToRent": "yes",
+"rating": 10,
+"diskType": "Blu-ray"
+}
+
